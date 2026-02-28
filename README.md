@@ -2,7 +2,7 @@
 Experiments for using AI in teaching things.
 
 # Visual Analysis
-[visual_analysis](Visual Analysis)
+[Visual Analysis](/visual_analysis/)
 
 Using Google Gemini to do analysis of web page screenshots for design elements and principles
 and generating various interactive activities for students to use. Contains plain HTML/JS,
