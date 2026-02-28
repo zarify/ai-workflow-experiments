@@ -1,0 +1,172 @@
+{
+  "iconType": "icon",
+  "icon": "plus",
+  "color": "#2563eb",
+  "hotspots": [
+    {
+      "position": {
+        "x": 50,
+        "y": 24
+      },
+      "alwaysFullscreen": false,
+      "header": "Dominance (Principle)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The word 'iPhone' acts as the dominant element. Its massive scale and central placement make it the primary focal point, ensuring it is the very first thing a user notices when the page loads.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "b0ef2968-2df9-4364-966b-31c05f3e0b5b",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 15,
+        "y": 45
+      },
+      "alwaysFullscreen": false,
+      "header": "Space (Element)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>Extensive use of negative space (white space) creates a sense of luxury and prevents the layout from feeling cluttered. This allows the product and key text to stand out clearly.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "17da26a4-32df-43e1-96a9-6e99ae901bbb",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 44,
+        "y": 40
+      },
+      "alwaysFullscreen": false,
+      "header": "Emphasis: Contrast (Principle)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The 'Learn more' button uses a saturated blue colour. This creates strong contrast against the monochromatic background, emphasizing the primary call-to-action.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "29799af9-336f-4078-b4e3-16a8a6dd0183",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 12,
+        "y": 12
+      },
+      "alwaysFullscreen": false,
+      "header": "Typography (Element)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The use of a clean Sans-serif font in the navigation and headings communicates a modern, high-tech brand identity. Using different weights helps the user distinguish between links and main content.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "095d263b-5276-493a-bbd2-eb6ad8ce141c",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 49,
+        "y": 75
+      },
+      "alwaysFullscreen": false,
+      "header": "Symmetrical Balance (Principle)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The layout is perfectly balanced along a central vertical axis. The text and buttons are centered, and the iPhones are arranged to create a stable, formal composition.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "27dc1f7c-3068-4aa0-94c7-2bc8e1a23d64",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 56,
+        "y": 40
+      },
+      "alwaysFullscreen": false,
+      "header": "Shape & Line (Elements)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The buttons use rounded 'pill' shapes defined by smooth lines. These organic shapes make the user interface feel more approachable and modern compared to sharp, industrial corners.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "07b31622-ab38-4a20-9731-c62ba9e180d3",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 50,
+        "y": 32
+      },
+      "alwaysFullscreen": false,
+      "header": "Emphasis: Proportion (Principle)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>Emphasis through Proportion is used to establish a clear visual hierarchy. By making the 'iPhone' heading significantly larger than the 'Say hello...' subheading, the designer ensures the product name remains the most important piece of information, while the smaller subtext provides supporting detail without competing for attention.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "5a907b9c-8ce5-431b-a24e-a2e6e77cc6ec",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    }
+  ],
+  "hotspotNumberLabel": "Hotspot #num",
+  "closeButtonLabel": "Close",
+  "containsAudioVideoLabel": "Contains Audio/Video",
+  "backgroundImageAltText": "Apple Website Screenshot",
+  "image": {
+    "path": "images/apple.jpg",
+    "mime": "image/jpeg",
+    "copyright": {
+      "license": "U"
+    }
+  }
+}

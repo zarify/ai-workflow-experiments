@@ -1,0 +1,150 @@
+{
+  "iconType": "icon",
+  "icon": "plus",
+  "color": "#2563eb",
+  "hotspots": [
+    {
+      "position": {
+        "x": 8.5,
+        "y": 12
+      },
+      "alwaysFullscreen": false,
+      "header": "Colour & Shape (Elements)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The Instagram glyph uses a vibrant gradient colour scheme and rounded geometric shapes. This creates a friendly and modern aesthetic that is instantly recognizable.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "2306f103-1ead-4ce7-a104-d2fbb5c662c8",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 26,
+        "y": 60
+      },
+      "alwaysFullscreen": false,
+      "header": "Dominance (Principle)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The central cluster of phone screens acts as the dominant visual element. Their overlapping arrangement and vibrant photographic content draw the eye before any text is read.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "bf076bfa-1430-4947-aafd-31dfaa071ed6",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 73,
+        "y": 43
+      },
+      "alwaysFullscreen": false,
+      "header": "Emphasis: Contrast (Principle)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The 'Log in' button uses a saturated blue against a white background. This high contrast creates emphasis, signaling to the user that this is the primary action to take.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "ce748d60-dff5-4672-be52-70b80ad5fd72",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 50,
+        "y": 45
+      },
+      "alwaysFullscreen": false,
+      "header": "Asymmetrical Balance (Principle)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The layout uses asymmetrical balance. The 'heavy' visual interest of the photos on the left is balanced by the 'clean' functional login form and white space on the right.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "5720a81f-0796-4835-8063-8204a9254312",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 73,
+        "y": 24
+      },
+      "alwaysFullscreen": false,
+      "header": "Line & Shape (Elements)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The input fields use thin grey lines and rounded corners (shapes). These 'soft' geometric shapes make the interface feel approachable and easy to use for a general audience.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "df6c0426-64f2-45e8-8ae5-ddd149e70c38",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 50,
+        "y": 94
+      },
+      "alwaysFullscreen": false,
+      "header": "Space (Element)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The footer links are separated from the main content by significant white space. This use of negative space ensures the layout doesn't feel cluttered and maintains focus on the login area.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "f39e5ed9-dbf3-4752-b1d7-d12996ca0bb0",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    }
+  ],
+  "hotspotNumberLabel": "Hotspot #num",
+  "closeButtonLabel": "Close",
+  "containsAudioVideoLabel": "Contains Audio/Video",
+  "backgroundImageAltText": "Instagram Landing Page Screenshot",
+  "image": {
+    "path": "images/instagram.jpg",
+    "mime": "image/jpeg",
+    "copyright": {
+      "license": "U"
+    }
+  }
+}

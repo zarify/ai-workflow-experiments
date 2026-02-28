@@ -1,0 +1,172 @@
+{
+  "iconType": "icon",
+  "icon": "plus",
+  "color": "#2563eb",
+  "hotspots": [
+    {
+      "position": {
+        "x": 8,
+        "y": 6
+      },
+      "alwaysFullscreen": false,
+      "header": "Shape & Typography (Elements)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The Steam logo combines geometric shapes (circle and arm) with bold typography. This creates a strong brand identity that stands out against the dark navigation bar.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "04372dc0-17d6-4f3c-bdc4-efcf7807ca3f",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 35,
+        "y": 42
+      },
+      "alwaysFullscreen": false,
+      "header": "Dominance (Principle)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The 'Next Fest' banner is the dominant element due to its massive scale and central placement. It uses a large, heavy typeface to ensure it is the first thing a user notices.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "f420ccce-c87e-4240-a3cc-6f93c2345193",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 84,
+        "y": 14
+      },
+      "alwaysFullscreen": false,
+      "header": "Emphasis: Contrast (Principle)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The blue search button provides high contrast against the dark grey search bar. This emphasizes the search function, making it easy for users to find specific games quickly.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "2a8ebafb-29cd-40c5-ad34-f6fa2c89c20c",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 40,
+        "y": 35
+      },
+      "alwaysFullscreen": false,
+      "header": "Texture & Colour (Elements)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The background of the banner features a blurred 'texture' of various game covers. The use of a muted purple/pink colour wash ensures the white text remains readable while maintaining a gaming atmosphere.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "befbbb8c-03b7-4387-9070-d40f4d15abda",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 34,
+        "y": 85
+      },
+      "alwaysFullscreen": false,
+      "header": "Emphasis: Proportion (Principle)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The 'Where Winds Meet' feature uses proportion to show importance. It is significantly larger than the 'Now Available' thumbnails on the right, signaling that it is the primary featured product.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "799ff28d-55a7-4788-9b3f-ce28cd3d9be8",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 50,
+        "y": 14
+      },
+      "alwaysFullscreen": false,
+      "header": "Line & Alignment (Elements)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The navigation menu uses horizontal alignment and thin lines to separate sections. This helps organize a large amount of information into a clear, scannable structure for the user.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "5fe5c414-b017-4188-8295-dbff6a81d789",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    },
+    {
+      "position": {
+        "x": 2,
+        "y": 91
+      },
+      "alwaysFullscreen": false,
+      "header": "Balance (Principle)",
+      "content": [
+        {
+          "params": {
+            "text": "<p>The layout achieves balance through the use of the carousel arrows on the left and right. This 'bookending' creates a sense of symmetry and tells the user there is more content to explore.</p>"
+          },
+          "library": "H5P.Text 1.1",
+          "subContentId": "b7061c43-526c-425f-8f84-728ebe03d27b",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Untitled Text"
+          }
+        }
+      ]
+    }
+  ],
+  "hotspotNumberLabel": "Hotspot #num",
+  "closeButtonLabel": "Close",
+  "containsAudioVideoLabel": "Contains Audio/Video",
+  "backgroundImageAltText": "Steam Store Landing Page Screenshot",
+  "image": {
+    "path": "images/steam.jpg",
+    "mime": "image/jpeg",
+    "copyright": {
+      "license": "U"
+    }
+  }
+}

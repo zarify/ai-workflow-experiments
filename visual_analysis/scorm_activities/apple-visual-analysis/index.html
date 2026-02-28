@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visual Analysis Activity</title><!-- overwritten by engine from config -->
+</head>
+<body>
+<noscript><p style="font-family:sans-serif;padding:20px">This activity requires JavaScript to be enabled.</p></noscript>
+
+<script>
+/* ============================================================
+   ACTIVITY CONFIGURATION
+   ============================================================
+   This is the only section you need to edit when authoring a
+   new activity. The engine below is generic and reusable.
+
+   Fields:
+     title        — displayed as the page heading
+     imageUrl     — path to screenshot, relative to index.html
+     imageAlt     — screen-reader description of the image
+     masteryScore is NOT set here — edit adlcp:masteryscore in
+                    imsmanifest.xml instead (Moodle is the authority on pass/fail)
+     hotspots     — one entry per question marker. Fields:
+       x, y       — position on image as percentage (0–100)
+       header     — short label shown as the marker tooltip title
+       context    — "look at…" hint shown in italics in the panel
+       question   — the question stem
+       choices    — array of {text, correct} objects.
+                    Exactly one must have "correct": true.
+                    Choices are automatically shuffled at runtime.
+   ============================================================ */
+
+const PAGE_CONFIG_JSON = `
+{
+  "title": "Apple Homepage — Visual Analysis",
+  "imageUrl": "img/apple.jpg",
+  "imageAlt": "Apple homepage screenshot",
+  "hotspots": [
+    {
+      "x": 50, "y": 24,
+      "header": "Dominance (Principle)",
+      "context": "Look at the large 'iPhone' text in the centre of the page.",
+      "question": "Which design principle explains why this text immediately grabs the viewer's attention above everything else on the page?",
+      "choices": [
+        { "text": "Dominance — its massive scale and central placement make it the primary focal point", "correct": true },
+        { "text": "Rhythm — repeating the same typeface across all headings creates visual flow", "correct": false },
+        { "text": "Proximity — related items are grouped together to show they belong together", "correct": false },
+        { "text": "Symmetrical Balance — equal visual weight is placed on both sides of a central axis", "correct": false }
+      ]
+    },
+    {
+      "x": 15, "y": 45,
+      "header": "Space (Element)",
+      "context": "Notice the large areas of white/empty space surrounding the product and text.",
+      "question": "Which design element is being used here to create a sense of luxury and prevent the layout from feeling cluttered?",
+      "choices": [
+        { "text": "Space — extensive negative (white) space allows the product and key text to stand out clearly", "correct": true },
+        { "text": "Value — gradual shifts from light to dark create depth and visual interest", "correct": false },
+        { "text": "Texture — implied surface qualities add a tactile dimension to the digital layout", "correct": false },
+        { "text": "Colour — a limited palette focuses attention on a single tonal family", "correct": false }
+      ]
+    },
+    {
+      "x": 44, "y": 40,
+      "header": "Emphasis: Contrast (Principle)",
+      "context": "Look at the blue 'Learn more' button set against the white/grey background.",
+      "question": "Which design principle is used here to draw the viewer's eye to the call-to-action button?",
+      "choices": [
+        { "text": "Emphasis through Contrast — the saturated blue creates strong contrast against the monochromatic background", "correct": true },
+        { "text": "Emphasis through Proportion — the button is made larger than surrounding elements to signal importance", "correct": false },
+        { "text": "Repetition — the same colour is repeated throughout the page to create unity", "correct": false },
+        { "text": "Proximity — the button is placed close to related text to group the information", "correct": false }
+      ]
+    },
+    {
+      "x": 12, "y": 12,
+      "header": "Typography (Element)",
+      "context": "Notice the clean sans-serif font used in the navigation bar and headings.",
+      "question": "Which design element is being used here to communicate a modern, high-tech brand identity?",
+      "choices": [
+        { "text": "Typography — the clean sans-serif font with varying weights communicates a modern identity", "correct": true },
+        { "text": "Shape — the rectangular nav bar uses geometric forms to frame and organise content", "correct": false },
+        { "text": "Colour — the neutral grey palette used in the navigation text creates visual calm", "correct": false },
+        { "text": "Line — invisible grid lines structure the navigation items horizontally", "correct": false }
+      ]
+    },
+    {
+      "x": 49, "y": 75,
+      "header": "Symmetrical Balance (Principle)",
+      "context": "Observe how the text, buttons, and product images are arranged around the centre of the page.",
+      "question": "Which design principle describes the layout being perfectly mirrored along a central vertical axis?",
+      "choices": [
+        { "text": "Symmetrical Balance — equal visual weight is distributed on both sides of the central axis", "correct": true },
+        { "text": "Asymmetrical Balance — unequal but visually balanced elements create a dynamic composition", "correct": false },
+        { "text": "Dominance — one element is made significantly larger to become the primary focal point", "correct": false },
+        { "text": "Rhythm — repeating patterns create a sense of movement through the layout", "correct": false }
+      ]
+    },
+    {
+      "x": 56, "y": 40,
+      "header": "Shape & Line (Elements)",
+      "context": "Look at the rounded 'pill' shape of the call-to-action buttons.",
+      "question": "Which two design elements are combined to make these buttons feel approachable and modern?",
+      "choices": [
+        { "text": "Shape & Line — rounded pill shapes defined by smooth organic lines create an approachable feel", "correct": true },
+        { "text": "Colour & Value — saturated tones with subtle gradients give the buttons visual depth", "correct": false },
+        { "text": "Texture & Space — implied tactile qualities combined with padding make the buttons feel comfortable", "correct": false },
+        { "text": "Typography & Form — the font choice inside the button defines its overall visual character", "correct": false }
+      ]
+    },
+    {
+      "x": 50, "y": 32,
+      "header": "Emphasis: Proportion (Principle)",
+      "context": "Compare the large 'iPhone' heading with the much smaller 'Say hello…' subheading directly below it.",
+      "question": "Which design principle is used to establish a visual hierarchy, ensuring the product name is the most important piece of information?",
+      "choices": [
+        { "text": "Emphasis through Proportion — making 'iPhone' significantly larger ensures it is the most important element", "correct": true },
+        { "text": "Emphasis through Contrast — different font colours create a distinction between heading and subheading", "correct": false },
+        { "text": "Dominance — the heading dominates because it occupies the most central position on the page", "correct": false },
+        { "text": "Repetition — the same font family at different sizes creates unity across the heading hierarchy", "correct": false }
+      ]
+    }
+  ]
+}
+`.trim();
+
+/* ============================================================
+   ENGINE — Do not edit below this line
+   ============================================================ */
+
+(function () {
+  'use strict';
+
+  // ── Config validation ──────────────────────────────────────────────────────
+
+  function validateConfig(cfg) {
+    if (!cfg || typeof cfg !== 'object') throw new Error('Config must be a JSON object.');
+    if (typeof cfg.title !== 'string' || !cfg.title.trim()) throw new Error('title is required.');
+    if (typeof cfg.imageUrl !== 'string' || !cfg.imageUrl.trim()) throw new Error('imageUrl is required.');
+    if (!Array.isArray(cfg.hotspots) || cfg.hotspots.length === 0) throw new Error('hotspots must be a non-empty array.');
+    cfg.hotspots.forEach(function (hs, i) {
+      var label = 'hotspots[' + i + ']';
+      if (typeof hs.x !== 'number' || typeof hs.y !== 'number') throw new Error(label + ' must have numeric x and y.');
+      if (hs.x < 0 || hs.x > 100 || hs.y < 0 || hs.y > 100) throw new Error(label + ' x/y must be 0–100.');
+      if (typeof hs.question !== 'string' || !hs.question.trim()) throw new Error(label + ' question is required.');
+      if (!Array.isArray(hs.choices) || hs.choices.length < 2) throw new Error(label + ' must have at least 2 choices.');
+      var correctCount = hs.choices.filter(function (c) { return c.correct === true; }).length;
+      if (correctCount !== 1) throw new Error(label + ' must have exactly one choice with "correct": true (found ' + correctCount + ').');
+    });
+  }
+
+  // ── SCORM 1.2 API ──────────────────────────────────────────────────────────
+
+  var SCORM = null;
+
+  function scormFind(win) {
+    var depth = 0;
+    while (win && depth < 8) {
+      if (win.API != null) return win.API;
+      if (win.parent === win) break;
+      win = win.parent;
+      depth++;
+    }
+    return null;
+  }
+
+  function scormInit() {
+    SCORM = scormFind(window);
+    if (SCORM) {
+      SCORM.LMSInitialize('');
+      SCORM.LMSSetValue('cmi.core.lesson_status', 'incomplete');
+      SCORM.LMSCommit('');
+    }
+  }
+
+  function scormFinish(correctCount, totalCount) {
+    if (!SCORM) return;
+    var scorePct = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+    SCORM.LMSSetValue('cmi.core.score.raw', String(scorePct));
+    SCORM.LMSSetValue('cmi.core.score.max', '100');
+    SCORM.LMSSetValue('cmi.core.score.min', '0');
+    SCORM.LMSSetValue('cmi.core.lesson_status', 'completed');
+    SCORM.LMSCommit('');
+    SCORM.LMSFinish('');
+  }
+
+  window.addEventListener('beforeunload', function () {
+    if (SCORM) SCORM.LMSCommit('');
+  });
+
+  // ── Utilities ──────────────────────────────────────────────────────────────
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  function el(tag, attrs, children) {
+    var e = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      if (k === 'className') e.className = attrs[k];
+      else if (k === 'textContent') e.textContent = attrs[k];
+      else e.setAttribute(k, attrs[k]);
+    });
+    if (children) children.forEach(function (c) { if (c) e.appendChild(c); });
+    return e;
+  }
+
+  // ── CSS injection ──────────────────────────────────────────────────────────
+
+  function injectStyles() {
+    if (document.getElementById('va-engine-styles')) return;
+    var css = [
+      '*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }',
+      'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;',
+      '       background: #f4f4f7; color: #1f2937; min-height: 100vh; }',
+
+      /* Activity shell */
+      '.va-activity { max-width: 1100px; margin: 0 auto; padding: 20px; }',
+      '.va-header { margin-bottom: 16px; }',
+      '.va-title { font-size: 1.4rem; font-weight: 700; color: #1f2937; margin-bottom: 6px; }',
+      '.va-subtitle { font-size: 0.875rem; color: #6b7280; margin-bottom: 12px; }',
+
+      /* Progress */
+      '.va-progress { display: flex; align-items: center; gap: 12px; }',
+      '.va-progress-bar { flex: 1; height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }',
+      '.va-progress-fill { height: 100%; background: #2563eb; border-radius: 4px; transition: width 0.4s ease; width: 0%; }',
+      '.va-progress-text { font-size: 0.8rem; color: #6b7280; white-space: nowrap; }',
+
+      /* Image */
+      '.va-image-wrap { position: relative; display: inline-block; width: 100%; border-radius: 12px;',
+      '  overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15); user-select: none; margin-top: 12px; }',
+      '.va-image { display: block; width: 100%; height: auto; }',
+
+      /* Markers */
+      '.va-marker { position: absolute; width: 32px; height: 32px; border-radius: 50%;',
+      '  border: 2.5px solid #fff; color: #fff; font-size: 13px; font-weight: 700;',
+      '  cursor: pointer; transform: translate(-50%, -50%);',
+      '  transition: background-color 0.3s ease, transform 0.15s ease, box-shadow 0.3s ease;',
+      '  z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.35);',
+      '  display: flex; align-items: center; justify-content: center;',
+      '  background-color: #2563eb; outline: none; padding: 0; }',
+      '.va-marker:hover { transform: translate(-50%, -50%) scale(1.15); box-shadow: 0 4px 14px rgba(0,0,0,0.4); }',
+      '.va-marker:focus-visible { box-shadow: 0 0 0 3px rgba(37,99,235,0.45), 0 2px 8px rgba(0,0,0,0.3); }',
+      '.va-marker.correct  { background-color: #16a34a; }',
+      '.va-marker.correct:hover  { background-color: #15803d; }',
+      '.va-marker.incorrect { background-color: #dc2626; }',
+      '.va-marker.incorrect:hover { background-color: #b91c1c; }',
+
+      /* Modal backdrop */
+      '.va-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200;',
+      '  display: flex; align-items: center; justify-content: center; padding: 20px;',
+      '  opacity: 0; pointer-events: none; transition: opacity 0.22s ease; }',
+      '.va-backdrop.open { opacity: 1; pointer-events: all; }',
+
+      /* Modal panel */
+      '.va-panel { background: #fff; border-radius: 16px; padding: 28px 28px 24px;',
+      '  max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto;',
+      '  box-shadow: 0 20px 60px rgba(0,0,0,0.28);',
+      '  transform: translateY(18px); transition: transform 0.22s ease; }',
+      '.va-backdrop.open .va-panel { transform: translateY(0); }',
+
+      /* Panel header */
+      '.va-panel-header { display: flex; align-items: flex-start; justify-content: space-between;',
+      '  gap: 12px; padding-bottom: 14px; border-bottom: 2px solid #e5e7eb; margin-bottom: 16px; }',
+      '.va-panel-num { width: 34px; height: 34px; border-radius: 50%; background: #2563eb;',
+      '  color: #fff; font-size: 14px; font-weight: 700;',
+      '  display: flex; align-items: center; justify-content: center; flex-shrink: 0; }',
+      '.va-panel-title { font-size: 1.05rem; font-weight: 700; color: #1f2937; flex: 1; line-height: 1.35; }',
+      '.va-panel-close { background: none; border: none; color: #9ca3af; font-size: 22px;',
+      '  cursor: pointer; line-height: 1; padding: 2px 4px; border-radius: 4px; transition: color 0.15s; }',
+      '.va-panel-close:hover { color: #1f2937; }',
+
+      /* Context clue */
+      '.va-context { font-size: 0.875rem; color: #4b5563; font-style: italic;',
+      '  background: #f9fafb; border-left: 3px solid #2563eb;',
+      '  padding: 9px 14px; border-radius: 0 6px 6px 0; margin-bottom: 16px; }',
+
+      /* Question */
+      '.va-question { font-size: 0.975rem; font-weight: 600; color: #1f2937;',
+      '  line-height: 1.5; margin-bottom: 16px; }',
+
+      /* Choices */
+      '.va-choices { display: flex; flex-direction: column; gap: 9px; margin-bottom: 18px; }',
+      '.va-choice { display: flex; align-items: flex-start; gap: 11px; padding: 11px 13px;',
+      '  border: 2px solid #e5e7eb; border-radius: 10px; cursor: pointer;',
+      '  transition: border-color 0.15s, background-color 0.15s; }',
+      '.va-choice:hover:not(.va-choice--disabled) { border-color: #2563eb; background: #eff6ff; }',
+      '.va-choice--selected { border-color: #2563eb; background: #eff6ff; }',
+      '.va-choice--correct  { border-color: #16a34a !important; background: #f0fdf4 !important; }',
+      '.va-choice--wrong    { border-color: #dc2626 !important; background: #fef2f2 !important; }',
+      '.va-choice--disabled { cursor: default; }',
+      '.va-choice input { margin-top: 2px; accent-color: #2563eb; flex-shrink: 0; width: 17px; height: 17px; cursor: pointer; }',
+      '.va-choice--disabled input { cursor: default; }',
+      '.va-choice label { font-size: 0.875rem; line-height: 1.45; color: #374151; cursor: pointer; }',
+      '.va-choice--disabled label { cursor: default; }',
+
+      /* Buttons */
+      '.va-btn-check { display: block; width: 100%; padding: 11px; background: #2563eb;',
+      '  color: #fff; border: none; border-radius: 10px; font-size: 0.975rem; font-weight: 600;',
+      '  cursor: pointer; transition: background-color 0.15s; margin-bottom: 12px; }',
+      '.va-btn-check:hover:not(:disabled) { background: #1d4ed8; }',
+      '.va-btn-check:disabled { opacity: 0.4; cursor: not-allowed; }',
+
+      '.va-btn-continue { display: none; width: 100%; padding: 11px; background: #f3f4f6;',
+      '  color: #374151; border: 1px solid #d1d5db; border-radius: 10px;',
+      '  font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background-color 0.15s; }',
+      '.va-btn-continue:hover { background: #e5e7eb; }',
+
+      /* Feedback */
+      '.va-feedback { display: none; padding: 12px 14px; border-radius: 10px;',
+      '  font-size: 0.875rem; line-height: 1.5; margin-bottom: 12px; }',
+      '.va-feedback.correct  { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }',
+      '.va-feedback.incorrect { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }',
+
+      /* Summary */
+      '.va-summary { display: none; margin-top: 20px; background: #fff; border-radius: 12px;',
+      '  padding: 28px 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; }',
+      '.va-summary h2 { font-size: 1.35rem; font-weight: 700; margin-bottom: 6px; }',
+      '.va-score { font-size: 3.5rem; font-weight: 800; margin: 14px 0 6px; }',
+      '.va-score.pass { color: #16a34a; } .va-score.fail { color: #dc2626; }',
+      '.va-score-msg { font-size: 0.95rem; color: #6b7280; }',
+
+      '@media (max-width: 600px) {',
+      '  .va-activity { padding: 12px; }',
+      '  .va-panel { padding: 18px; }',
+      '}'
+    ].join('\n');
+
+    var style = document.createElement('style');
+    style.id = 'va-engine-styles';
+    style.textContent = css;
+    (document.head || document.documentElement).appendChild(style);
+  }
+
+  // ── Build UI ───────────────────────────────────────────────────────────────
+
+  function buildUI(cfg) {
+    // Prepare shuffled question data (keep config immutable)
+    var questions = cfg.hotspots.map(function (hs) {
+      return {
+        x: hs.x, y: hs.y,
+        header: hs.header || '',
+        context: hs.context || '',
+        question: hs.question,
+        choices: shuffle(hs.choices.map(function (c) { return { text: c.text, correct: !!c.correct }; }))
+      };
+    });
+
+    var total = questions.length;
+    var answered = questions.map(function () { return null; });
+    var currentIdx = -1;
+    var selectedChoice = -1;
+
+    // Set page title
+    document.title = cfg.title;
+
+    // ── Skeleton HTML ──
+    var root = el('div', { className: 'va-activity' });
+
+    var header = el('div', { className: 'va-header' }, [
+      el('h1', { className: 'va-title', textContent: cfg.title }),
+      el('p', { className: 'va-subtitle', textContent: 'Click each numbered marker on the image to answer the question. All ' + total + ' questions must be answered to submit your score.' }),
+      el('div', { className: 'va-progress' }, [
+        el('div', { className: 'va-progress-bar' }, [
+          el('div', { className: 'va-progress-fill', id: 'va-pfill' })
+        ]),
+        el('span', { className: 'va-progress-text', id: 'va-ptext' })
+      ])
+    ]);
+
+    var imageWrap = el('div', { className: 'va-image-wrap' });
+    var img = el('img', { className: 'va-image', src: cfg.imageUrl, alt: cfg.imageAlt || 'Activity image' });
+    imageWrap.appendChild(img);
+
+    var summary = el('div', { className: 'va-summary', id: 'va-summary' }, [
+      el('h2', { textContent: 'Activity Complete!' }),
+      el('div', { className: 'va-score', id: 'va-score' }),
+      el('p', { className: 'va-score-msg', id: 'va-score-msg' })
+    ]);
+
+    root.appendChild(header);
+    root.appendChild(imageWrap);
+    root.appendChild(summary);
+    document.body.appendChild(root);
+
+    // ── Modal ──
+    var backdrop = el('div', { className: 'va-backdrop', role: 'dialog', 'aria-modal': 'true' });
+    var panel = el('div', { className: 'va-panel' });
+    var panelNum   = el('div', { className: 'va-panel-num' });
+    var panelTitle = el('div', { className: 'va-panel-title' });
+    var panelClose = el('button', { className: 'va-panel-close', type: 'button', 'aria-label': 'Close', textContent: '×' });
+    var panelContext  = el('p', { className: 'va-context' });
+    var panelQuestion = el('p', { className: 'va-question' });
+    var choicesWrap   = el('div', { className: 'va-choices' });
+    var btnCheck    = el('button', { className: 'va-btn-check', type: 'button', textContent: 'Check Answer' });
+    var feedbackEl  = el('div', { className: 'va-feedback' });
+    var btnContinue = el('button', { className: 'va-btn-continue', type: 'button' });
+
+    btnCheck.disabled = true;
+
+    panel.appendChild(el('div', { className: 'va-panel-header' }, [panelNum, panelTitle, panelClose]));
+    panel.appendChild(panelContext);
+    panel.appendChild(panelQuestion);
+    panel.appendChild(choicesWrap);
+    panel.appendChild(btnCheck);
+    panel.appendChild(feedbackEl);
+    panel.appendChild(btnContinue);
+    backdrop.appendChild(panel);
+    document.body.appendChild(backdrop);
+
+    // ── Markers ──
+    var markers = [];
+    questions.forEach(function (q, i) {
+      var m = el('button', {
+        className: 'va-marker',
+        type: 'button',
+        'aria-label': 'Question ' + (i + 1) + ': ' + q.header
+      });
+      m.textContent = String(i + 1);
+      m.style.left = q.x + '%';
+      m.style.top  = q.y + '%';
+      m.addEventListener('click', function () { openModal(i); });
+      imageWrap.appendChild(m);
+      markers.push(m);
+    });
+
+    // ── Progress ──
+    function updateProgress() {
+      var done = answered.filter(function (a) { return a !== null; }).length;
+      var pct  = total > 0 ? (done / total) * 100 : 0;
+      document.getElementById('va-pfill').style.width = pct + '%';
+      document.getElementById('va-ptext').textContent = done + ' / ' + total + ' answered';
+    }
+
+    // ── Modal open ──
+    function openModal(idx) {
+      currentIdx  = idx;
+      selectedChoice = -1;
+      var q = questions[idx];
+      var a = answered[idx];
+
+      panelNum.textContent   = String(idx + 1);
+      panelTitle.textContent = q.header;
+      panelContext.textContent  = q.context;
+      panelQuestion.textContent = q.question;
+
+      choicesWrap.innerHTML = '';
+      q.choices.forEach(function (choice, ci) {
+        var radio = el('input', { type: 'radio', name: 'va-choice', id: 'va-c' + ci, value: String(ci) });
+        radio.disabled = a !== null;
+        var label = el('label', { 'for': 'va-c' + ci, textContent: choice.text });
+        var div = el('div', { className: 'va-choice' + (a !== null ? ' va-choice--disabled' : '') }, [radio, label]);
+
+        if (a !== null) {
+          // Show result highlights when re-opening an answered question
+          if (choice.correct) div.classList.add('va-choice--correct');
+        } else {
+          div.addEventListener('click', function () {
+            choicesWrap.querySelectorAll('.va-choice').forEach(function (d) {
+              d.classList.remove('va-choice--selected');
+              d.querySelector('input').checked = false;
+            });
+            div.classList.add('va-choice--selected');
+            radio.checked = true;
+            selectedChoice = ci;
+            btnCheck.disabled = false;
+          });
+        }
+        choicesWrap.appendChild(div);
+      });
+
+      feedbackEl.className = 'va-feedback';
+      feedbackEl.textContent = '';
+
+      if (a !== null) {
+        // Re-opening already-answered: show locked state
+        btnCheck.style.display = 'none';
+        var correctText = q.choices.filter(function (c) { return c.correct; })[0].text;
+        feedbackEl.className = 'va-feedback ' + a;
+        feedbackEl.textContent = a === 'correct'
+          ? '✅ Correct! ' + correctText
+          : '❌ Not quite. The correct answer is: ' + correctText;
+        feedbackEl.style.display = 'block';
+        btnContinue.textContent = 'Close';
+        btnContinue.style.display = 'block';
+      } else {
+        btnCheck.style.display = 'block';
+        btnCheck.disabled = true;
+        feedbackEl.style.display = 'none';
+        btnContinue.style.display = 'none';
+      }
+
+      backdrop.classList.add('open');
+      document.addEventListener('keydown', onKeydown);
+    }
+
+    // ── Check answer ──
+    btnCheck.addEventListener('click', function () {
+      if (selectedChoice < 0 || currentIdx < 0) return;
+      var q = questions[currentIdx];
+      var chosen = q.choices[selectedChoice];
+      var isCorrect = chosen.correct;
+      answered[currentIdx] = isCorrect ? 'correct' : 'incorrect';
+
+      // Highlight choices
+      choicesWrap.querySelectorAll('.va-choice').forEach(function (div, ci) {
+        div.classList.add('va-choice--disabled');
+        div.querySelector('input').disabled = true;
+        if (q.choices[ci].correct) {
+          div.classList.add('va-choice--correct');
+          div.classList.remove('va-choice--selected');
+        } else if (ci === selectedChoice && !isCorrect) {
+          div.classList.add('va-choice--wrong');
+          div.classList.remove('va-choice--selected');
+        }
+      });
+
+      // Recolour marker
+      markers[currentIdx].classList.add(isCorrect ? 'correct' : 'incorrect');
+
+      // Feedback
+      var correctText = q.choices.filter(function (c) { return c.correct; })[0].text;
+      feedbackEl.className = 'va-feedback ' + (isCorrect ? 'correct' : 'incorrect');
+      feedbackEl.textContent = isCorrect
+        ? '✅ Correct! ' + correctText
+        : '❌ Not quite. The correct answer is: ' + correctText;
+      feedbackEl.style.display = 'block';
+      btnCheck.style.display = 'none';
+
+      updateProgress();
+
+      var allDone = answered.every(function (a) { return a !== null; });
+      btnContinue.textContent = allDone ? 'See your score →' : 'Continue →';
+      btnContinue.style.display = 'block';
+    });
+
+    // ── Close modal ──
+    function closeModal() {
+      backdrop.classList.remove('open');
+      document.removeEventListener('keydown', onKeydown);
+      var allDone = answered.every(function (a) { return a !== null; });
+      if (allDone) showSummary();
+    }
+
+    function onKeydown(e) { if (e.key === 'Escape') closeModal(); }
+    btnContinue.addEventListener('click', closeModal);
+    panelClose.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', function (e) { if (e.target === backdrop) closeModal(); });
+
+    // ── Summary ──
+    function showSummary() {
+      var correct = answered.filter(function (a) { return a === 'correct'; }).length;
+      var scorePct = Math.round((correct / total) * 100);
+      document.getElementById('va-score').textContent = correct + ' / ' + total;
+      document.getElementById('va-score').className = 'va-score';
+      document.getElementById('va-score-msg').textContent =
+        'You scored ' + scorePct + '%. Your result has been submitted to the gradebook.';
+      document.getElementById('va-summary').style.display = 'block';
+      document.getElementById('va-summary').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      scormFinish(correct, total);
+    }
+
+    updateProgress();
+  }
+
+  // ── Boot ──────────────────────────────────────────────────────────────────
+
+  function boot() {
+    injectStyles();
+    scormInit();
+    try {
+      var cfg = JSON.parse(PAGE_CONFIG_JSON);
+      validateConfig(cfg);
+      buildUI(cfg);
+    } catch (e) {
+      document.body.innerHTML = '<p style="font-family:sans-serif;padding:20px;color:#b91c1c">'
+        + '<strong>Configuration error:</strong> ' + e.message + '</p>';
+      console.error('Visual Analysis SCORM — config error:', e);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+})();
+</script>
+</body>
+</html>

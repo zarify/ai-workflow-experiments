@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Year 11 AIT Design Annotations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f4f7;
+        }
+
+        .image-container {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        /* The Image */
+        .annotated-image {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        /* Hotspot Styling */
+        .hotspot {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            background-color: rgba(37, 99, 235, 0.9); /* Primary Blue */
+            border: 2px solid white;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        .hotspot:hover {
+            background-color: #1e40af;
+            box-shadow: 0 0 15px rgba(37, 99, 235, 0.5);
+        }
+
+        .hotspot.active {
+            z-index: 100;
+        }
+
+        /* Tooltip Styling */
+        .tooltip {
+            position: fixed;
+            left: 0;
+            top: 0;
+            transform: translate(-50%, -50%) translateY(10px);
+            width: 280px;
+            background: #ffffff;
+            color: #1f2937;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            pointer-events: none;
+            z-index: 99;
+            border-top: 4px solid #2563eb;
+        }
+
+        .tooltip.active {
+            visibility: visible;
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%);
+        }
+
+        .tooltip-close {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            color: #6b7280;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .tooltip-close:hover {
+            color: #1f2937;
+        }
+
+        /* Legend/sidebar style */
+        .legend-item {
+            border-left: 4px solid #2563eb;
+            transition: all 0.2s ease;
+        }
+        .legend-item:hover {
+            background-color: #eff6ff;
+            padding-left: 20px;
+        }
+
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto bg-white rounded-2xl shadow-sm p-6">
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-gray-800">Visual Analysis Tool</h1>
+            <p class="text-gray-500 mt-2 italic">Year 11 General Applied Information Technology</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Image Section -->
+            <div class="lg:col-span-2">
+                <div class="image-container">
+                    <!-- Base Image -->
+                    <img id="annotatedImage" src="img/apple.jpg" alt="Website Screenshot" class="annotated-image" onerror="this.src='https://placehold.co/1000x600?text=Image+Not+Found+-+Check+Filename'">
+
+                    <div id="hotspotLayer"></div>
+                </div>
+                <p class="text-xs text-gray-400 mt-4 text-center">Click the numbered markers to view design definitions.</p>
+            </div>
+
+            <!-- Theory Sidebar -->
+            <div class="space-y-6">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4">AIT Design Key</h2>
+                    <div class="space-y-4">
+                        <div class="legend-item bg-blue-50 p-3 rounded">
+                            <span class="font-bold text-blue-700">Design Elements</span>
+                            <p class="text-sm text-gray-600">The basic components: Line, Shape, Space, Colour, Texture, and Typography.</p>
+                        </div>
+                        <div class="legend-item bg-indigo-50 p-3 rounded">
+                            <span class="font-bold text-indigo-700">Design Principles</span>
+                            <p class="text-sm text-gray-600">How elements are arranged: Balance, Emphasis (Contrast &amp; Proportion), and Dominance.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-xl">
+                    <h3 class="font-bold text-gray-700 mb-2">Analysis Tip:</h3>
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        When annotating always use the <strong>PEEL</strong> method:
+                        <br>• <strong>P</strong>oint: Identify the principle (e.g., Balance).
+                        <br>• <strong>E</strong>vidence: Refer to the image (e.g., The centered phones).
+                        <br>• <strong>E</strong>xplain: How does it work? (e.g., It creates a calm look).
+                        <br>• <strong>L</strong>ink: To the target audience (e.g., Tech-savvy users).
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const imageContainer = document.querySelector('.image-container');
+        const annotatedImage = document.getElementById('annotatedImage');
+        const hotspotLayer = document.getElementById('hotspotLayer');
+        let activeHotspot = null;
+        let activeTooltip = null;
+
+                const PAGE_CONFIG_JSON = `
+{
+"imageUrl": "img/steam.jpg",
+"imageAlt": "Steam Store Landing Page Screenshot",
+"hotspots": [
+{
+"x": 8,
+"y": 6,
+"title": "Shape & Typography (Elements)",
+"message": "The Steam logo combines geometric shapes (circle and arm) with bold typography. This creates a strong brand identity that stands out against the dark navigation bar."
+},
+{
+"x": 35,
+"y": 42,
+"title": "Dominance (Principle)",
+"message": "The 'Next Fest' banner is the dominant element due to its massive scale and central placement. It uses a large, heavy typeface to ensure it is the first thing a user notices."
+},
+{
+"x": 84,
+"y": 14,
+"title": "Emphasis: Contrast (Principle)",
+"message": "The blue search button provides high contrast against the dark grey search bar. This emphasizes the search function, making it easy for users to find specific games quickly."
+},
+{
+"x": 40,
+"y": 35,
+"title": "Texture & Colour (Elements)",
+"message": "The background of the banner features a blurred 'texture' of various game covers. The use of a muted purple/pink colour wash ensures the white text remains readable while maintaining a gaming atmosphere."
+},
+{
+"x": 34,
+"y": 85,
+"title": "Emphasis: Proportion (Principle)",
+"message": "The 'Where Winds Meet' feature uses proportion to show importance. It is significantly larger than the 'Now Available' thumbnails on the right, signaling that it is the primary featured product."
+},
+{
+"x": 50,
+"y": 14,
+"title": "Line & Alignment (Elements)",
+"message": "The navigation menu uses horizontal alignment and thin lines to separate sections. This helps organize a large amount of information into a clear, scannable structure for the user."
+},
+{
+"x": 2,
+"y": 91,
+"title": "Balance (Principle)",
+"message": "The layout achieves balance through the use of the carousel arrows on the left and right. This 'bookending' creates a sense of symmetry and tells the user there is more content to explore."
+}
+]
+}
+`.trim();
+
+        function centerTooltip(tooltip) {
+            const rect = imageContainer.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            tooltip.style.left = centerX + 'px';
+            tooltip.style.top = centerY + 'px';
+        }
+
+        function closeTooltip(tooltip) {
+            if (!tooltip) {
+                return;
+            }
+
+            tooltip.classList.remove('active');
+
+            if (activeHotspot) {
+                activeHotspot.classList.remove('active');
+                activeHotspot = null;
+            }
+
+            if (activeTooltip === tooltip) {
+                activeTooltip = null;
+            }
+        }
+
+        function openTooltip(hotspot, tooltip) {
+            if (activeTooltip && activeTooltip !== tooltip) {
+                closeTooltip(activeTooltip);
+            }
+
+            centerTooltip(tooltip);
+            hotspot.classList.add('active');
+            tooltip.classList.add('active');
+            activeHotspot = hotspot;
+            activeTooltip = tooltip;
+        }
+
+        function setupHotspotInteractions(hotspot) {
+            const tooltip = hotspot.querySelector('.tooltip');
+            const closeButton = document.createElement('button');
+
+            closeButton.type = 'button';
+            closeButton.className = 'tooltip-close';
+            closeButton.setAttribute('aria-label', 'Close tooltip');
+            closeButton.textContent = '×';
+            tooltip.appendChild(closeButton);
+
+            hotspot.addEventListener('click', (event) => {
+                event.stopPropagation();
+
+                if (tooltip === activeTooltip) {
+                    closeTooltip(tooltip);
+                    return;
+                }
+
+                openTooltip(hotspot, tooltip);
+            });
+
+            tooltip.addEventListener('click', (event) => {
+                event.stopPropagation();
+            });
+
+            closeButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                closeTooltip(tooltip);
+            });
+        }
+
+        function validateConfig(config) {
+            if (!config || typeof config !== 'object') {
+                throw new Error('Config must be a JSON object.');
+            }
+
+            if (typeof config.imageUrl !== 'string' || !config.imageUrl.trim()) {
+                throw new Error('imageUrl is required and must be a non-empty string.');
+            }
+
+            if (!Array.isArray(config.hotspots)) {
+                throw new Error('hotspots must be an array.');
+            }
+
+            config.hotspots.forEach((spot, index) => {
+                if (typeof spot.x !== 'number' || typeof spot.y !== 'number') {
+                    throw new Error(`hotspots[${index}] must include numeric x and y values.`);
+                }
+                if (spot.x < 0 || spot.x > 100 || spot.y < 0 || spot.y > 100) {
+                    throw new Error(`hotspots[${index}] x/y must be between 0 and 100.`);
+                }
+                if (typeof spot.message !== 'string' || !spot.message.trim()) {
+                    throw new Error(`hotspots[${index}] message is required.`);
+                }
+            });
+        }
+
+        function renderFromConfig(config) {
+            closeTooltip(activeTooltip);
+            hotspotLayer.innerHTML = '';
+
+            annotatedImage.src = config.imageUrl;
+            annotatedImage.alt = typeof config.imageAlt === 'string' && config.imageAlt.trim()
+                ? config.imageAlt
+                : 'Website Screenshot';
+
+            config.hotspots.forEach((spot, index) => {
+                const hotspot = document.createElement('div');
+                hotspot.className = 'hotspot';
+                hotspot.style.left = spot.x + '%';
+                hotspot.style.top = spot.y + '%';
+                hotspot.textContent = String(index + 1);
+
+                const tooltip = document.createElement('div');
+                tooltip.className = 'tooltip';
+
+                const title = document.createElement('h3');
+                title.className = 'font-bold text-blue-600 mb-1';
+                title.textContent = typeof spot.title === 'string' && spot.title.trim() ? spot.title : `Annotation ${index + 1}`;
+
+                const message = document.createElement('p');
+                message.textContent = spot.message;
+
+                tooltip.appendChild(title);
+                tooltip.appendChild(message);
+                hotspot.appendChild(tooltip);
+                hotspotLayer.appendChild(hotspot);
+
+                setupHotspotInteractions(hotspot);
+            });
+        }
+
+        try {
+            const pageConfig = JSON.parse(PAGE_CONFIG_JSON);
+            validateConfig(pageConfig);
+            renderFromConfig(pageConfig);
+        } catch (error) {
+            console.error('Invalid PAGE_CONFIG_JSON:', error);
+        }
+
+        document.addEventListener('click', () => {
+            closeTooltip(activeTooltip);
+        });
+
+        window.addEventListener('resize', () => {
+            if (activeTooltip) {
+                centerTooltip(activeTooltip);
+            }
+        });
+
+        window.addEventListener('scroll', () => {
+            if (activeTooltip) {
+                centerTooltip(activeTooltip);
+            }
+        });
+    </script>
+
+</body>
+</html>

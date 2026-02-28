@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================
+  SCORM 1.2 Manifest — Visual Analysis Activity
+  ============================================================
+  To create a new activity, change these three things:
+    1. identifier="..."        — unique slug, e.g. instagram-visual-analysis
+    2. <title>...</title>      — human-readable name shown in Moodle
+    3. <file href="img/..."/>  — match your image filename
+  ============================================================
+-->
+<manifest identifier="apple-visual-analysis"
+          version="1.0"
+          xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
+          xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd
+                              http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd">
+
+  <metadata>
+    <schema>ADL SCORM</schema>
+    <schemaversion>1.2</schemaversion>
+  </metadata>
+
+  <organizations default="org-apple-visual-analysis">
+    <organization identifier="org-apple-visual-analysis">
+      <title>Apple Homepage Visual Analysis</title>
+      <item identifier="item-1" identifierref="resource-1">
+        <title>Apple Homepage Visual Analysis</title>
+        <adlcp:masteryscore>70</adlcp:masteryscore>
+      </item>
+    </organization>
+  </organizations>
+
+  <resources>
+    <resource identifier="resource-1"
+              type="webcontent"
+              adlcp:scormtype="sco"
+              href="index.html">
+      <file href="index.html"/>
+      <file href="img/apple.jpg"/>
+    </resource>
+  </resources>
+
+</manifest>

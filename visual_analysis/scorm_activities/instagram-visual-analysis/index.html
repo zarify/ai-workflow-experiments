@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visual Analysis Activity</title><!-- overwritten by engine from config -->
+</head>
+<body>
+<noscript><p style="font-family:sans-serif;padding:20px">This activity requires JavaScript to be enabled.</p></noscript>
+
+<script>
+/* ============================================================
+   ACTIVITY CONFIGURATION
+   ============================================================
+   This is the only section you need to edit when authoring a
+   new activity. The engine below is generic and reusable.
+
+   Fields:
+     title        — displayed as the page heading
+     imageUrl     — path to screenshot, relative to index.html
+     imageAlt     — screen-reader description of the image
+     masteryScore is NOT set here — edit adlcp:masteryscore in
+                    imsmanifest.xml instead (Moodle is the authority on pass/fail)
+     hotspots     — one entry per question marker. Fields:
+       x, y       — position on image as percentage (0–100)
+       header     — short label shown as the marker tooltip title
+       context    — "look at…" hint shown in italics in the panel
+       question   — the question stem
+       choices    — array of {text, correct} objects.
+                    Exactly one must have "correct": true.
+                    Choices are automatically shuffled at runtime.
+   ============================================================ */
+
+const PAGE_CONFIG_JSON = `
+{
+  "title": "Instagram Homepage — Visual Analysis",
+  "imageUrl": "img/instagram.jpg",
+  "imageAlt": "Instagram landing page screenshot",
+  "hotspots": [
+    {
+      "x": 8.5, "y": 12,
+      "header": "Colour & Shape (Elements)",
+      "context": "Look at the Instagram logo/glyph in the top-left corner of the page.",
+      "question": "Which two design elements combine to create the friendly, modern, and instantly recognisable brand identity seen here?",
+      "choices": [
+        { "text": "Colour & Shape — a vibrant gradient colour scheme combined with rounded geometric shapes creates a friendly, modern aesthetic", "correct": true },
+        { "text": "Typography & Line — bold lettering defined by clean strokes makes the wordmark stand out against the background", "correct": false },
+        { "text": "Texture & Value — layered tones with implied depth give the icon a tactile, three-dimensional quality", "correct": false },
+        { "text": "Space & Form — strategic negative space and three-dimensional form make the icon feel approachable and minimal", "correct": false }
+      ]
+    },
+    {
+      "x": 26, "y": 60,
+      "header": "Dominance (Principle)",
+      "context": "Notice the cluster of overlapping phone screens in the centre-left of the page.",
+      "question": "Which design principle explains why the eye is drawn to this cluster before any of the text is read?",
+      "choices": [
+        { "text": "Dominance — the overlapping arrangement and vibrant photographic content make this the primary focal point", "correct": true },
+        { "text": "Symmetrical Balance — equal visual weight placed on both sides of a central axis creates a stable, formal composition", "correct": false },
+        { "text": "Proximity — grouping the phone screens together signals that they belong to the same category of content", "correct": false },
+        { "text": "Rhythm — repeating similar phone shapes creates a sense of movement that guides the eye across the layout", "correct": false }
+      ]
+    },
+    {
+      "x": 73, "y": 43,
+      "header": "Emphasis: Contrast (Principle)",
+      "context": "Look at the 'Log in' button on the right side of the page.",
+      "question": "Which design principle is used here to signal to the user that this is the primary action to take?",
+      "choices": [
+        { "text": "Emphasis through Contrast — saturated blue against a white background creates high contrast, highlighting the primary action", "correct": true },
+        { "text": "Emphasis through Proportion — the button is made significantly larger than surrounding elements to signal its importance", "correct": false },
+        { "text": "Dominance — the button's central placement on the right panel makes it the most important element in that section", "correct": false },
+        { "text": "Repetition — the same blue colour is used consistently throughout the page to reinforce brand identity", "correct": false }
+      ]
+    },
+    {
+      "x": 50, "y": 45,
+      "header": "Asymmetrical Balance (Principle)",
+      "context": "Compare the left half of the page (phone screen images) with the right half (login form and white space).",
+      "question": "Which principle is demonstrated when the visual 'weight' of the photos on the left is offset by the clean white space of the login form on the right?",
+      "choices": [
+        { "text": "Asymmetrical Balance — the heavy visual interest of the photos is offset by the clean, functional login form and white space", "correct": true },
+        { "text": "Symmetrical Balance — equal visual elements are mirrored on both sides of a central vertical axis", "correct": false },
+        { "text": "Dominance — the photo section is made much larger than the form section to create a clear focal point", "correct": false },
+        { "text": "Emphasis through Contrast — the opposing visual qualities of the two halves draw attention to the login area", "correct": false }
+      ]
+    },
+    {
+      "x": 73, "y": 24,
+      "header": "Line & Shape (Elements)",
+      "context": "Look at the input fields in the login form on the right side of the page.",
+      "question": "Which two design elements combine to make this form feel approachable and easy to use?",
+      "choices": [
+        { "text": "Line & Shape — thin grey lines and rounded corners create soft geometric shapes that feel approachable and easy to interact with", "correct": true },
+        { "text": "Colour & Value — neutral tones with subtle lightness variation create a calm, professional appearance", "correct": false },
+        { "text": "Space & Texture — generous padding and implied tactile qualities make the fields feel comfortable to use", "correct": false },
+        { "text": "Typography & Form — placeholder text style and field proportions define the overall character of the form", "correct": false }
+      ]
+    },
+    {
+      "x": 50, "y": 94,
+      "header": "Space (Element)",
+      "context": "Notice the footer link area at the very bottom of the page.",
+      "question": "Which design element is used here to separate the footer from the main content and maintain focus on the login area above?",
+      "choices": [
+        { "text": "Space — significant negative (white) space between the footer and main content prevents clutter and keeps focus on the login area", "correct": true },
+        { "text": "Line — a visible horizontal rule divides the footer from the body of the page, creating a clear boundary", "correct": false },
+        { "text": "Value — a lighter background tone used in the footer creates a visual distinction from the main content", "correct": false },
+        { "text": "Colour — a different colour palette in the footer signals a change in content priority to the user", "correct": false }
+      ]
+    }
+  ]
+}
+`.trim();
+
+/* ============================================================
+   ENGINE — Do not edit below this line
+   ============================================================ */
+
+(function () {
+  'use strict';
+
+  // ── Config validation ──────────────────────────────────────────────────────
+
+  function validateConfig(cfg) {
+    if (!cfg || typeof cfg !== 'object') throw new Error('Config must be a JSON object.');
+    if (typeof cfg.title !== 'string' || !cfg.title.trim()) throw new Error('title is required.');
+    if (typeof cfg.imageUrl !== 'string' || !cfg.imageUrl.trim()) throw new Error('imageUrl is required.');
+    if (!Array.isArray(cfg.hotspots) || cfg.hotspots.length === 0) throw new Error('hotspots must be a non-empty array.');
+    cfg.hotspots.forEach(function (hs, i) {
+      var label = 'hotspots[' + i + ']';
+      if (typeof hs.x !== 'number' || typeof hs.y !== 'number') throw new Error(label + ' must have numeric x and y.');
+      if (hs.x < 0 || hs.x > 100 || hs.y < 0 || hs.y > 100) throw new Error(label + ' x/y must be 0–100.');
+      if (typeof hs.question !== 'string' || !hs.question.trim()) throw new Error(label + ' question is required.');
+      if (!Array.isArray(hs.choices) || hs.choices.length < 2) throw new Error(label + ' must have at least 2 choices.');
+      var correctCount = hs.choices.filter(function (c) { return c.correct === true; }).length;
+      if (correctCount !== 1) throw new Error(label + ' must have exactly one choice with "correct": true (found ' + correctCount + ').');
+    });
+  }
+
+  // ── SCORM 1.2 API ──────────────────────────────────────────────────────────
+
+  var SCORM = null;
+
+  function scormFind(win) {
+    var depth = 0;
+    while (win && depth < 8) {
+      if (win.API != null) return win.API;
+      if (win.parent === win) break;
+      win = win.parent;
+      depth++;
+    }
+    return null;
+  }
+
+  function scormInit() {
+    SCORM = scormFind(window);
+    if (SCORM) {
+      SCORM.LMSInitialize('');
+      SCORM.LMSSetValue('cmi.core.lesson_status', 'incomplete');
+      SCORM.LMSCommit('');
+    }
+  }
+
+  function scormFinish(correctCount, totalCount) {
+    if (!SCORM) return;
+    var scorePct = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+    SCORM.LMSSetValue('cmi.core.score.raw', String(scorePct));
+    SCORM.LMSSetValue('cmi.core.score.max', '100');
+    SCORM.LMSSetValue('cmi.core.score.min', '0');
+    SCORM.LMSSetValue('cmi.core.lesson_status', 'completed');
+    SCORM.LMSCommit('');
+    SCORM.LMSFinish('');
+  }
+
+  window.addEventListener('beforeunload', function () {
+    if (SCORM) SCORM.LMSCommit('');
+  });
+
+  // ── Utilities ──────────────────────────────────────────────────────────────
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  function el(tag, attrs, children) {
+    var e = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      if (k === 'className') e.className = attrs[k];
+      else if (k === 'textContent') e.textContent = attrs[k];
+      else e.setAttribute(k, attrs[k]);
+    });
+    if (children) children.forEach(function (c) { if (c) e.appendChild(c); });
+    return e;
+  }
+
+  // ── CSS injection ──────────────────────────────────────────────────────────
+
+  function injectStyles() {
+    if (document.getElementById('va-engine-styles')) return;
+    var css = [
+      '*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }',
+      'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;',
+      '       background: #f4f4f7; color: #1f2937; min-height: 100vh; }',
+
+      /* Activity shell */
+      '.va-activity { max-width: 1100px; margin: 0 auto; padding: 20px; }',
+      '.va-header { margin-bottom: 16px; }',
+      '.va-title { font-size: 1.4rem; font-weight: 700; color: #1f2937; margin-bottom: 6px; }',
+      '.va-subtitle { font-size: 0.875rem; color: #6b7280; margin-bottom: 12px; }',
+
+      /* Progress */
+      '.va-progress { display: flex; align-items: center; gap: 12px; }',
+      '.va-progress-bar { flex: 1; height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }',
+      '.va-progress-fill { height: 100%; background: #2563eb; border-radius: 4px; transition: width 0.4s ease; width: 0%; }',
+      '.va-progress-text { font-size: 0.8rem; color: #6b7280; white-space: nowrap; }',
+
+      /* Image */
+      '.va-image-wrap { position: relative; display: inline-block; width: 100%; border-radius: 12px;',
+      '  overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15); user-select: none; margin-top: 12px; }',
+      '.va-image { display: block; width: 100%; height: auto; }',
+
+      /* Markers */
+      '.va-marker { position: absolute; width: 32px; height: 32px; border-radius: 50%;',
+      '  border: 2.5px solid #fff; color: #fff; font-size: 13px; font-weight: 700;',
+      '  cursor: pointer; transform: translate(-50%, -50%);',
+      '  transition: background-color 0.3s ease, transform 0.15s ease, box-shadow 0.3s ease;',
+      '  z-index: 10; box-shadow: 0 2px 8px rgba(0,0,0,0.35);',
+      '  display: flex; align-items: center; justify-content: center;',
+      '  background-color: #2563eb; outline: none; padding: 0; }',
+      '.va-marker:hover { transform: translate(-50%, -50%) scale(1.15); box-shadow: 0 4px 14px rgba(0,0,0,0.4); }',
+      '.va-marker:focus-visible { box-shadow: 0 0 0 3px rgba(37,99,235,0.45), 0 2px 8px rgba(0,0,0,0.3); }',
+      '.va-marker.correct  { background-color: #16a34a; }',
+      '.va-marker.correct:hover  { background-color: #15803d; }',
+      '.va-marker.incorrect { background-color: #dc2626; }',
+      '.va-marker.incorrect:hover { background-color: #b91c1c; }',
+
+      /* Modal backdrop */
+      '.va-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200;',
+      '  display: flex; align-items: center; justify-content: center; padding: 20px;',
+      '  opacity: 0; pointer-events: none; transition: opacity 0.22s ease; }',
+      '.va-backdrop.open { opacity: 1; pointer-events: all; }',
+
+      /* Modal panel */
+      '.va-panel { background: #fff; border-radius: 16px; padding: 28px 28px 24px;',
+      '  max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto;',
+      '  box-shadow: 0 20px 60px rgba(0,0,0,0.28);',
+      '  transform: translateY(18px); transition: transform 0.22s ease; }',
+      '.va-backdrop.open .va-panel { transform: translateY(0); }',
+
+      /* Panel header */
+      '.va-panel-header { display: flex; align-items: flex-start; justify-content: space-between;',
+      '  gap: 12px; padding-bottom: 14px; border-bottom: 2px solid #e5e7eb; margin-bottom: 16px; }',
+      '.va-panel-num { width: 34px; height: 34px; border-radius: 50%; background: #2563eb;',
+      '  color: #fff; font-size: 14px; font-weight: 700;',
+      '  display: flex; align-items: center; justify-content: center; flex-shrink: 0; }',
+      '.va-panel-title { font-size: 1.05rem; font-weight: 700; color: #1f2937; flex: 1; line-height: 1.35; }',
+      '.va-panel-close { background: none; border: none; color: #9ca3af; font-size: 22px;',
+      '  cursor: pointer; line-height: 1; padding: 2px 4px; border-radius: 4px; transition: color 0.15s; }',
+      '.va-panel-close:hover { color: #1f2937; }',
+
+      /* Context clue */
+      '.va-context { font-size: 0.875rem; color: #4b5563; font-style: italic;',
+      '  background: #f9fafb; border-left: 3px solid #2563eb;',
+      '  padding: 9px 14px; border-radius: 0 6px 6px 0; margin-bottom: 16px; }',
+
+      /* Question */
+      '.va-question { font-size: 0.975rem; font-weight: 600; color: #1f2937;',
+      '  line-height: 1.5; margin-bottom: 16px; }',
+
+      /* Choices */
+      '.va-choices { display: flex; flex-direction: column; gap: 9px; margin-bottom: 18px; }',
+      '.va-choice { display: flex; align-items: flex-start; gap: 11px; padding: 11px 13px;',
+      '  border: 2px solid #e5e7eb; border-radius: 10px; cursor: pointer;',
+      '  transition: border-color 0.15s, background-color 0.15s; }',
+      '.va-choice:hover:not(.va-choice--disabled) { border-color: #2563eb; background: #eff6ff; }',
+      '.va-choice--selected { border-color: #2563eb; background: #eff6ff; }',
+      '.va-choice--correct  { border-color: #16a34a !important; background: #f0fdf4 !important; }',
+      '.va-choice--wrong    { border-color: #dc2626 !important; background: #fef2f2 !important; }',
+      '.va-choice--disabled { cursor: default; }',
+      '.va-choice input { margin-top: 2px; accent-color: #2563eb; flex-shrink: 0; width: 17px; height: 17px; cursor: pointer; }',
+      '.va-choice--disabled input { cursor: default; }',
+      '.va-choice label { font-size: 0.875rem; line-height: 1.45; color: #374151; cursor: pointer; }',
+      '.va-choice--disabled label { cursor: default; }',
+
+      /* Buttons */
+      '.va-btn-check { display: block; width: 100%; padding: 11px; background: #2563eb;',
+      '  color: #fff; border: none; border-radius: 10px; font-size: 0.975rem; font-weight: 600;',
+      '  cursor: pointer; transition: background-color 0.15s; margin-bottom: 12px; }',
+      '.va-btn-check:hover:not(:disabled) { background: #1d4ed8; }',
+      '.va-btn-check:disabled { opacity: 0.4; cursor: not-allowed; }',
+
+      '.va-btn-continue { display: none; width: 100%; padding: 11px; background: #f3f4f6;',
+      '  color: #374151; border: 1px solid #d1d5db; border-radius: 10px;',
+      '  font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background-color 0.15s; }',
+      '.va-btn-continue:hover { background: #e5e7eb; }',
+
+      /* Feedback */
+      '.va-feedback { display: none; padding: 12px 14px; border-radius: 10px;',
+      '  font-size: 0.875rem; line-height: 1.5; margin-bottom: 12px; }',
+      '.va-feedback.correct  { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }',
+      '.va-feedback.incorrect { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }',
+
+      /* Summary */
+      '.va-summary { display: none; margin-top: 20px; background: #fff; border-radius: 12px;',
+      '  padding: 28px 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; }',
+      '.va-summary h2 { font-size: 1.35rem; font-weight: 700; margin-bottom: 6px; }',
+      '.va-score { font-size: 3.5rem; font-weight: 800; margin: 14px 0 6px; }',
+      '.va-score.pass { color: #16a34a; } .va-score.fail { color: #dc2626; }',
+      '.va-score-msg { font-size: 0.95rem; color: #6b7280; }',
+
+      '@media (max-width: 600px) {',
+      '  .va-activity { padding: 12px; }',
+      '  .va-panel { padding: 18px; }',
+      '}'
+    ].join('\n');
+
+    var style = document.createElement('style');
+    style.id = 'va-engine-styles';
+    style.textContent = css;
+    (document.head || document.documentElement).appendChild(style);
+  }
+
+  // ── Build UI ───────────────────────────────────────────────────────────────
+
+  function buildUI(cfg) {
+    // Prepare shuffled question data (keep config immutable)
+    var questions = cfg.hotspots.map(function (hs) {
+      return {
+        x: hs.x, y: hs.y,
+        header: hs.header || '',
+        context: hs.context || '',
+        question: hs.question,
+        choices: shuffle(hs.choices.map(function (c) { return { text: c.text, correct: !!c.correct }; }))
+      };
+    });
+
+    var total = questions.length;
+    var answered = questions.map(function () { return null; });
+    var currentIdx = -1;
+    var selectedChoice = -1;
+
+    // Set page title
+    document.title = cfg.title;
+
+    // ── Skeleton HTML ──
+    var root = el('div', { className: 'va-activity' });
+
+    var header = el('div', { className: 'va-header' }, [
+      el('h1', { className: 'va-title', textContent: cfg.title }),
+      el('p', { className: 'va-subtitle', textContent: 'Click each numbered marker on the image to answer the question. All ' + total + ' questions must be answered to submit your score.' }),
+      el('div', { className: 'va-progress' }, [
+        el('div', { className: 'va-progress-bar' }, [
+          el('div', { className: 'va-progress-fill', id: 'va-pfill' })
+        ]),
+        el('span', { className: 'va-progress-text', id: 'va-ptext' })
+      ])
+    ]);
+
+    var imageWrap = el('div', { className: 'va-image-wrap' });
+    var img = el('img', { className: 'va-image', src: cfg.imageUrl, alt: cfg.imageAlt || 'Activity image' });
+    imageWrap.appendChild(img);
+
+    var summary = el('div', { className: 'va-summary', id: 'va-summary' }, [
+      el('h2', { textContent: 'Activity Complete!' }),
+      el('div', { className: 'va-score', id: 'va-score' }),
+      el('p', { className: 'va-score-msg', id: 'va-score-msg' })
+    ]);
+
+    root.appendChild(header);
+    root.appendChild(imageWrap);
+    root.appendChild(summary);
+    document.body.appendChild(root);
+
+    // ── Modal ──
+    var backdrop = el('div', { className: 'va-backdrop', role: 'dialog', 'aria-modal': 'true' });
+    var panel = el('div', { className: 'va-panel' });
+    var panelNum   = el('div', { className: 'va-panel-num' });
+    var panelTitle = el('div', { className: 'va-panel-title' });
+    var panelClose = el('button', { className: 'va-panel-close', type: 'button', 'aria-label': 'Close', textContent: '×' });
+    var panelContext  = el('p', { className: 'va-context' });
+    var panelQuestion = el('p', { className: 'va-question' });
+    var choicesWrap   = el('div', { className: 'va-choices' });
+    var btnCheck    = el('button', { className: 'va-btn-check', type: 'button', textContent: 'Check Answer' });
+    var feedbackEl  = el('div', { className: 'va-feedback' });
+    var btnContinue = el('button', { className: 'va-btn-continue', type: 'button' });
+
+    btnCheck.disabled = true;
+
+    panel.appendChild(el('div', { className: 'va-panel-header' }, [panelNum, panelTitle, panelClose]));
+    panel.appendChild(panelContext);
+    panel.appendChild(panelQuestion);
+    panel.appendChild(choicesWrap);
+    panel.appendChild(btnCheck);
+    panel.appendChild(feedbackEl);
+    panel.appendChild(btnContinue);
+    backdrop.appendChild(panel);
+    document.body.appendChild(backdrop);
+
+    // ── Markers ──
+    var markers = [];
+    questions.forEach(function (q, i) {
+      var m = el('button', {
+        className: 'va-marker',
+        type: 'button',
+        'aria-label': 'Question ' + (i + 1) + ': ' + q.header
+      });
+      m.textContent = String(i + 1);
+      m.style.left = q.x + '%';
+      m.style.top  = q.y + '%';
+      m.addEventListener('click', function () { openModal(i); });
+      imageWrap.appendChild(m);
+      markers.push(m);
+    });
+
+    // ── Progress ──
+    function updateProgress() {
+      var done = answered.filter(function (a) { return a !== null; }).length;
+      var pct  = total > 0 ? (done / total) * 100 : 0;
+      document.getElementById('va-pfill').style.width = pct + '%';
+      document.getElementById('va-ptext').textContent = done + ' / ' + total + ' answered';
+    }
+
+    // ── Modal open ──
+    function openModal(idx) {
+      currentIdx  = idx;
+      selectedChoice = -1;
+      var q = questions[idx];
+      var a = answered[idx];
+
+      panelNum.textContent   = String(idx + 1);
+      panelTitle.textContent = q.header;
+      panelContext.textContent  = q.context;
+      panelQuestion.textContent = q.question;
+
+      choicesWrap.innerHTML = '';
+      q.choices.forEach(function (choice, ci) {
+        var radio = el('input', { type: 'radio', name: 'va-choice', id: 'va-c' + ci, value: String(ci) });
+        radio.disabled = a !== null;
+        var label = el('label', { 'for': 'va-c' + ci, textContent: choice.text });
+        var div = el('div', { className: 'va-choice' + (a !== null ? ' va-choice--disabled' : '') }, [radio, label]);
+
+        if (a !== null) {
+          // Show result highlights when re-opening an answered question
+          if (choice.correct) div.classList.add('va-choice--correct');
+        } else {
+          div.addEventListener('click', function () {
+            choicesWrap.querySelectorAll('.va-choice').forEach(function (d) {
+              d.classList.remove('va-choice--selected');
+              d.querySelector('input').checked = false;
+            });
+            div.classList.add('va-choice--selected');
+            radio.checked = true;
+            selectedChoice = ci;
+            btnCheck.disabled = false;
+          });
+        }
+        choicesWrap.appendChild(div);
+      });
+
+      feedbackEl.className = 'va-feedback';
+      feedbackEl.textContent = '';
+
+      if (a !== null) {
+        // Re-opening already-answered: show locked state
+        btnCheck.style.display = 'none';
+        var correctText = q.choices.filter(function (c) { return c.correct; })[0].text;
+        feedbackEl.className = 'va-feedback ' + a;
+        feedbackEl.textContent = a === 'correct'
+          ? '✅ Correct! ' + correctText
+          : '❌ Not quite. The correct answer is: ' + correctText;
+        feedbackEl.style.display = 'block';
+        btnContinue.textContent = 'Close';
+        btnContinue.style.display = 'block';
+      } else {
+        btnCheck.style.display = 'block';
+        btnCheck.disabled = true;
+        feedbackEl.style.display = 'none';
+        btnContinue.style.display = 'none';
+      }
+
+      backdrop.classList.add('open');
+      document.addEventListener('keydown', onKeydown);
+    }
+
+    // ── Check answer ──
+    btnCheck.addEventListener('click', function () {
+      if (selectedChoice < 0 || currentIdx < 0) return;
+      var q = questions[currentIdx];
+      var chosen = q.choices[selectedChoice];
+      var isCorrect = chosen.correct;
+      answered[currentIdx] = isCorrect ? 'correct' : 'incorrect';
+
+      // Highlight choices
+      choicesWrap.querySelectorAll('.va-choice').forEach(function (div, ci) {
+        div.classList.add('va-choice--disabled');
+        div.querySelector('input').disabled = true;
+        if (q.choices[ci].correct) {
+          div.classList.add('va-choice--correct');
+          div.classList.remove('va-choice--selected');
+        } else if (ci === selectedChoice && !isCorrect) {
+          div.classList.add('va-choice--wrong');
+          div.classList.remove('va-choice--selected');
+        }
+      });
+
+      // Recolour marker
+      markers[currentIdx].classList.add(isCorrect ? 'correct' : 'incorrect');
+
+      // Feedback
+      var correctText = q.choices.filter(function (c) { return c.correct; })[0].text;
+      feedbackEl.className = 'va-feedback ' + (isCorrect ? 'correct' : 'incorrect');
+      feedbackEl.textContent = isCorrect
+        ? '✅ Correct! ' + correctText
+        : '❌ Not quite. The correct answer is: ' + correctText;
+      feedbackEl.style.display = 'block';
+      btnCheck.style.display = 'none';
+
+      updateProgress();
+
+      var allDone = answered.every(function (a) { return a !== null; });
+      btnContinue.textContent = allDone ? 'See your score →' : 'Continue →';
+      btnContinue.style.display = 'block';
+    });
+
+    // ── Close modal ──
+    function closeModal() {
+      backdrop.classList.remove('open');
+      document.removeEventListener('keydown', onKeydown);
+      var allDone = answered.every(function (a) { return a !== null; });
+      if (allDone) showSummary();
+    }
+
+    function onKeydown(e) { if (e.key === 'Escape') closeModal(); }
+    btnContinue.addEventListener('click', closeModal);
+    panelClose.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', function (e) { if (e.target === backdrop) closeModal(); });
+
+    // ── Summary ──
+    function showSummary() {
+      var correct = answered.filter(function (a) { return a === 'correct'; }).length;
+      var scorePct = Math.round((correct / total) * 100);
+      document.getElementById('va-score').textContent = correct + ' / ' + total;
+      document.getElementById('va-score').className = 'va-score';
+      document.getElementById('va-score-msg').textContent =
+        'You scored ' + scorePct + '%. Your result has been submitted to the gradebook.';
+      document.getElementById('va-summary').style.display = 'block';
+      document.getElementById('va-summary').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      scormFinish(correct, total);
+    }
+
+    updateProgress();
+  }
+
+  // ── Boot ──────────────────────────────────────────────────────────────────
+
+  function boot() {
+    injectStyles();
+    scormInit();
+    try {
+      var cfg = JSON.parse(PAGE_CONFIG_JSON);
+      validateConfig(cfg);
+      buildUI(cfg);
+    } catch (e) {
+      document.body.innerHTML = '<p style="font-family:sans-serif;padding:20px;color:#b91c1c">'
+        + '<strong>Configuration error:</strong> ' + e.message + '</p>';
+      console.error('Visual Analysis SCORM — config error:', e);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+})();
+</script>
+</body>
+</html>
